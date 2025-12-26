@@ -24,10 +24,20 @@ Main workflow for running Google Drive and Sheets operations.
 - `DEFAULT_SHEET_NAME`: Default sheet name
 - `DEFAULT_OUTPUT_FILENAME`: Default output filename for exports
 
-**Manual Inputs:**
-- `spreadsheet_id`: Override default spreadsheet ID
-- `drive_folder_id`: Override default folder ID
-- `operation`: Operation to perform (drive_to_sheets, sheets_to_drive, read_sheets, write_sheets, custom)
+**Manual Inputs (when triggering manually):**
+- `operation` (required): Operation to perform
+  - `read_sheets`: Read data from Google Sheets
+  - `write_sheets`: Write data to Google Sheets
+  - `drive_to_sheets`: Process Drive file to Sheets
+  - `sheets_to_drive`: Export Sheets data to Drive
+  - `list_drive_files`: List files in Google Drive
+  - `custom`: Custom operation
+- `spreadsheet_id`: Google Sheets Spreadsheet ID (required for sheet operations)
+- `drive_folder_id`: Google Drive Folder ID (optional)
+- `drive_file_id`: Google Drive File ID (for drive_to_sheets operation)
+- `sheet_name`: Sheet name (optional, defaults to first sheet)
+- `range_name`: Range in A1 notation (e.g., Sheet1!A1:C10)
+- `output_filename`: Output filename for exports (default: export.csv)
 
 ### 2. `test_workflow.yml`
 Testing workflow that validates code syntax and imports without requiring credentials.
@@ -74,12 +84,23 @@ Cron format: `minute hour day month day-of-week`
 
 ### 3. Run Workflow Manually
 
+**Manual triggering is enabled and ready to use!**
+
 1. Go to **Actions** tab in your repository
-2. Select **Google Drive & Sheets Workflow**
-3. Click **Run workflow**
-4. Choose branch and operation
-5. Optionally provide spreadsheet_id and drive_folder_id
-6. Click **Run workflow**
+2. Select **Google Drive & Sheets Workflow** from the left sidebar
+3. Click **Run workflow** button on the right
+4. Choose:
+   - **Branch**: Select the branch to run from (usually `main`)
+   - **Operation**: Select the operation to perform (required)
+   - **Spreadsheet ID**: Enter if needed for sheet operations
+   - **Drive Folder ID**: Enter if needed for Drive operations
+   - **Drive File ID**: Enter if processing a specific Drive file
+   - **Sheet Name**: Optional sheet name
+   - **Range Name**: Optional range in A1 notation
+   - **Output Filename**: Optional output filename for exports
+5. Click the green **Run workflow** button
+
+The workflow will start immediately and you can monitor its progress in real-time.
 
 ## Available Operations
 

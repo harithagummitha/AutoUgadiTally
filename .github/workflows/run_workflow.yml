@@ -5,27 +5,45 @@ on:
   schedule:
     - cron: '0 2 * * *'
   
-  # Allow manual trigger
+  # Allow manual trigger from GitHub Actions UI
   workflow_dispatch:
     inputs:
+      operation:
+        description: 'Operation to perform'
+        required: true
+        type: choice
+        options:
+          - read_sheets
+          - write_sheets
+          - drive_to_sheets
+          - sheets_to_drive
+          - list_drive_files
+          - custom
+        default: 'custom'
       spreadsheet_id:
-        description: 'Google Sheets Spreadsheet ID'
+        description: 'Google Sheets Spreadsheet ID (required for sheet operations)'
         required: false
         type: string
       drive_folder_id:
-        description: 'Google Drive Folder ID'
+        description: 'Google Drive Folder ID (optional)'
         required: false
         type: string
-      operation:
-        description: 'Operation to perform (drive_to_sheets, sheets_to_drive, read_sheets, write_sheets)'
+      drive_file_id:
+        description: 'Google Drive File ID (for drive_to_sheets operation)'
         required: false
-        type: choice
-        options:
-          - drive_to_sheets
-          - sheets_to_drive
-          - read_sheets
-          - write_sheets
-          - custom
+        type: string
+      sheet_name:
+        description: 'Sheet name (optional, defaults to first sheet)'
+        required: false
+        type: string
+      range_name:
+        description: 'Range in A1 notation (e.g., Sheet1!A1:C10)'
+        required: false
+        type: string
+      output_filename:
+        description: 'Output filename for exports (default: export.csv)'
+        required: false
+        type: string
   
   # Run on push to main branch
   push:
@@ -71,14 +89,17 @@ jobs:
       - name: Run workflow script
         env:
           GOOGLE_APPLICATION_CREDENTIALS: credentials.json
+          OPERATION: ${{ inputs.operation || 'custom' }}
           SPREADSHEET_ID: ${{ inputs.spreadsheet_id || secrets.DEFAULT_SPREADSHEET_ID }}
           DRIVE_FOLDER_ID: ${{ inputs.drive_folder_id || secrets.DEFAULT_DRIVE_FOLDER_ID }}
-          DRIVE_FILE_ID: ${{ secrets.DEFAULT_DRIVE_FILE_ID }}
-          OPERATION: ${{ inputs.operation || 'custom' }}
-          RANGE_NAME: ${{ secrets.DEFAULT_RANGE_NAME || 'Sheet1!A1' }}
-          SHEET_NAME: ${{ secrets.DEFAULT_SHEET_NAME }}
-          OUTPUT_FILENAME: ${{ secrets.DEFAULT_OUTPUT_FILENAME || 'export.csv' }}
+          DRIVE_FILE_ID: ${{ inputs.drive_file_id || secrets.DEFAULT_DRIVE_FILE_ID }}
+          SHEET_NAME: ${{ inputs.sheet_name || secrets.DEFAULT_SHEET_NAME }}
+          RANGE_NAME: ${{ inputs.range_name || secrets.DEFAULT_RANGE_NAME || 'Sheet1!A1' }}
+          OUTPUT_FILENAME: ${{ inputs.output_filename || secrets.DEFAULT_OUTPUT_FILENAME || 'export.csv' }}
         run: |
+          echo "Running operation: $OPERATION"
+          echo "Spreadsheet ID: ${SPREADSHEET_ID:-Not provided}"
+          echo "Drive Folder ID: ${DRIVE_FOLDER_ID:-Not provided}"
           python workflow_runner.py
       
       - name: Cleanup credentials
