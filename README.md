@@ -129,6 +129,34 @@ workflow.process_drive_to_sheets('file-id', 'spreadsheet-id', process_func=proce
 file_id = workflow.process_sheets_to_drive('spreadsheet-id', 'output.csv', drive_folder_id='folder-id')
 ```
 
+## GitHub Actions Workflow
+
+This project includes GitHub Actions workflows for automated execution:
+
+### Setup GitHub Secrets
+
+1. Go to your repository **Settings** > **Secrets and variables** > **Actions**
+2. Add the following secret:
+   - `GOOGLE_APPLICATION_CREDENTIALS`: Paste the entire contents of your service account JSON file
+3. Optionally add default values:
+   - `DEFAULT_SPREADSHEET_ID`
+   - `DEFAULT_DRIVE_FOLDER_ID`
+   - `DEFAULT_DRIVE_FILE_ID`
+
+### Run Workflow
+
+**Automated:**
+- Runs on schedule (daily at 2 AM UTC by default)
+- Runs on push to main/master branch
+
+**Manual:**
+1. Go to **Actions** tab
+2. Select **Google Drive & Sheets Workflow**
+3. Click **Run workflow**
+4. Choose operation and provide IDs
+
+See [`.github/workflows/README.md`](.github/workflows/README.md) for detailed documentation.
+
 ## File Structure
 
 ```
@@ -136,8 +164,15 @@ AutoUgadiTally/
 ├── google_drive_handler.py    # Google Drive operations
 ├── google_sheets_handler.py    # Google Sheets operations
 ├── workflow.py                 # Main workflow orchestration
+├── workflow_runner.py          # CLI runner for workflows
+├── example_usage.py            # Example usage script
 ├── requirements.txt            # Python dependencies
 ├── config.example.json         # Example configuration
+├── .github/
+│   └── workflows/
+│       ├── run_workflow.yml    # Main GitHub Actions workflow
+│       ├── test_workflow.yml   # Testing workflow
+│       └── README.md           # Workflow documentation
 └── README.md                   # This file
 ```
 
